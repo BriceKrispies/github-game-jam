@@ -45,6 +45,7 @@ export function createInitialState(): GameState {
     gameOverReason: '',
     started: false,
     elapsed: 0,
+    deliveryFlash: 0,
   };
 
   // Spawn initial packages
@@ -93,6 +94,11 @@ export function update(state: GameState, dt: number): void {
 
   const dtMs = dt * 1000;
   state.elapsed += dtMs;
+
+  // Tick delivery flash
+  if (state.deliveryFlash > 0) {
+    state.deliveryFlash = Math.max(0, state.deliveryFlash - dtMs);
+  }
 
   // Update movement interpolation
   if (state.player.moving) {
@@ -173,6 +179,7 @@ function onArrived(state: GameState): void {
       state.player.energy = Math.min(STARTING_ENERGY, state.player.energy + ENERGY_PER_DELIVERY);
       state.packages = state.packages.filter((p) => p.id !== pkg.id);
       state.player.carryingPackage = null;
+      state.deliveryFlash = 400;
     }
   }
 }

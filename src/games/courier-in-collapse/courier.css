@@ -1,111 +1,136 @@
+/* ── Container ── */
 [data-game="courier-in-collapse"] {
   position: relative;
   overflow: hidden;
-  background: #1a1b2e;
+  background: #f0f2f5;
 }
 
 [data-game="courier-in-collapse"] canvas {
   display: block;
 }
 
-/* HUD */
+/* ── HUD: compact overlay row ── */
 .courier-hud {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 6px;
+  left: 6px;
+  right: 6px;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 8px 12px;
+  align-items: center;
+  gap: 6px;
   pointer-events: none;
   z-index: 10;
+  font-family: system-ui, -apple-system, sans-serif;
 }
 
-.hud-left,
-.hud-right {
+.hud-pill {
   display: flex;
-  gap: 12px;
   align-items: center;
+  gap: 3px;
+  background: rgba(255,255,255,0.88);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 20px;
+  padding: 3px 10px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
-.hud-score,
-.hud-deliveries {
-  background: rgba(26, 27, 46, 0.85);
-  border-radius: 6px;
-  padding: 4px 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.hud-pill-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1;
 }
 
-.hud-label {
-  font-size: 9px;
+.hud-pill-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: #94a3b8;
+  line-height: 1;
+}
+
+/* Score pill */
+.hud-score-pill {
+  flex-shrink: 0;
+}
+
+/* Objective - center, takes remaining space */
+.hud-objective {
+  flex: 1;
+  text-align: center;
+  min-width: 0;
+}
+
+.hud-obj-text {
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.5px;
-  color: #9198a8;
-  font-family: system-ui, sans-serif;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.hud-value {
-  font-size: 18px;
-  font-weight: 700;
-  color: #ffffff;
-  font-family: system-ui, sans-serif;
+/* Energy pill */
+.hud-energy-pill {
+  flex-shrink: 0;
+  gap: 5px;
+  padding-left: 4px;
 }
 
-.hud-combo {
-  background: rgba(239, 71, 111, 0.9);
-  border-radius: 6px;
-  padding: 4px 10px;
-}
-
-.hud-combo-value {
-  font-size: 16px;
-  font-weight: 700;
-  color: #ffffff;
-  font-family: system-ui, sans-serif;
-}
-
-.hud-energy-bar {
-  position: relative;
-  width: 80px;
-  height: 20px;
-  background: rgba(26, 27, 46, 0.85);
-  border-radius: 10px;
+.hud-energy-track {
+  width: 40px;
+  height: 6px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 3px;
   overflow: hidden;
 }
 
-.hud-energy-fill {
+.hud-energy-bar {
   height: 100%;
-  background: #06d6a0;
-  border-radius: 10px;
-  transition: width 0.15s ease;
+  background: #3b82f6;
+  border-radius: 3px;
+  transition: width 0.12s ease;
 }
 
-.hud-energy-text {
+.hud-energy-value {
+  font-size: 11px;
+  min-width: 18px;
+  text-align: right;
+}
+
+/* Combo badge */
+.hud-combo-badge {
   position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  top: 32px;
+  left: 6px;
+  background: #f97316;
+  color: #fff;
   font-size: 11px;
   font-weight: 700;
-  color: #ffffff;
-  font-family: system-ui, sans-serif;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  font-family: system-ui, -apple-system, sans-serif;
+  padding: 2px 8px;
+  border-radius: 10px;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  pointer-events: none;
 }
 
-/* D-pad for mobile */
+.hud-combo-badge.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ── D-pad: compact, bottom-right ── */
 .courier-dpad {
   display: none;
   position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 140px;
-  height: 140px;
+  bottom: 12px;
+  right: 12px;
+  width: 100px;
+  height: 100px;
   z-index: 20;
+  opacity: 0.7;
 }
 
 .dpad-center {
@@ -113,21 +138,21 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 36px;
-  height: 36px;
-  background: rgba(67, 97, 238, 0.3);
-  border-radius: 8px;
+  width: 24px;
+  height: 24px;
+  background: rgba(0,0,0,0.04);
+  border-radius: 6px;
 }
 
 .dpad-btn {
   position: absolute;
-  width: 44px;
-  height: 44px;
+  width: 32px;
+  height: 32px;
   border: none;
-  border-radius: 10px;
-  background: rgba(67, 97, 238, 0.55);
-  color: #ffffff;
-  font-size: 16px;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.08);
+  color: #475569;
+  font-size: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -137,11 +162,12 @@
   -webkit-user-select: none;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
+  transition: background 0.08s ease;
 }
 
 .dpad-btn:active {
-  background: rgba(67, 97, 238, 0.85);
-  transform: scale(0.92);
+  background: rgba(59, 130, 246, 0.3);
+  color: #1e40af;
 }
 
 .dpad-up {
@@ -150,7 +176,7 @@
   transform: translateX(-50%);
 }
 .dpad-up:active {
-  transform: translateX(-50%) scale(0.92);
+  transform: translateX(-50%) scale(0.93);
 }
 
 .dpad-down {
@@ -159,7 +185,7 @@
   transform: translateX(-50%);
 }
 .dpad-down:active {
-  transform: translateX(-50%) scale(0.92);
+  transform: translateX(-50%) scale(0.93);
 }
 
 .dpad-left {
@@ -168,7 +194,7 @@
   transform: translateY(-50%);
 }
 .dpad-left:active {
-  transform: translateY(-50%) scale(0.92);
+  transform: translateY(-50%) scale(0.93);
 }
 
 .dpad-right {
@@ -177,7 +203,7 @@
   transform: translateY(-50%);
 }
 .dpad-right:active {
-  transform: translateY(-50%) scale(0.92);
+  transform: translateY(-50%) scale(0.93);
 }
 
 /* Show D-pad on touch devices */
@@ -187,23 +213,41 @@
   }
 }
 
-/* Smaller screens: compact HUD */
-@media (max-width: 500px) {
+/* Small phones: tighten HUD further */
+@media (max-width: 380px) {
   .courier-hud {
-    padding: 4px 8px;
+    gap: 4px;
+    top: 4px;
+    left: 4px;
+    right: 4px;
   }
 
-  .hud-score,
-  .hud-deliveries {
-    padding: 2px 6px;
+  .hud-pill {
+    padding: 2px 7px;
   }
 
-  .hud-value {
-    font-size: 14px;
+  .hud-pill-value {
+    font-size: 12px;
   }
 
-  .hud-energy-bar {
-    width: 60px;
-    height: 16px;
+  .hud-obj-text {
+    font-size: 10px;
+  }
+
+  .hud-energy-track {
+    width: 32px;
+  }
+
+  .courier-dpad {
+    width: 90px;
+    height: 90px;
+    bottom: 8px;
+    right: 8px;
+  }
+
+  .dpad-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 10px;
   }
 }

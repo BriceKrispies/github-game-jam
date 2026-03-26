@@ -50,6 +50,7 @@ export interface GameState {
   gameOverReason: string;
   started: boolean;
   elapsed: number;
+  deliveryFlash: number;  // Countdown timer for delivery feedback (ms)
 }
 
 export enum Direction {

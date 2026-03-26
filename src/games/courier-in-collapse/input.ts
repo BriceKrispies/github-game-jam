@@ -44,9 +44,9 @@ export function createInputHandler(
     heldKeys.delete(e.key);
   }
 
-  // Repeat movement for held keys
+  // Key repeat
   let repeatId: number | null = null;
-  const REPEAT_DELAY = 150;
+  const REPEAT_DELAY = 120;
 
   function startRepeat(): void {
     stopRepeat();
@@ -54,27 +54,24 @@ export function createInputHandler(
       if (isGameOver()) return;
       for (const key of heldKeys) {
         const dir = keyMap[key];
-        if (dir) {
-          onDirection(dir);
-          break; // Only process one direction at a time
-        }
+        if (dir) { onDirection(dir); break; }
       }
     }, REPEAT_DELAY);
   }
 
   function stopRepeat(): void {
-    if (repeatId !== null) {
-      clearInterval(repeatId);
-      repeatId = null;
-    }
+    if (repeatId !== null) { clearInterval(repeatId); repeatId = null; }
   }
 
   window.addEventListener('keydown', handleKeyDown);
   window.addEventListener('keyup', handleKeyUp);
   startRepeat();
 
-  // Mobile D-pad
+  // D-pad
   const dpad = createDpad(container, onDirection, onRestart, isGameOver);
+
+  // Swipe input on the canvas
+  const swipe = createSwipeHandler(container, onDirection, onRestart, isGameOver);
 
   return function destroy(): void {
     window.removeEventListener('keydown', handleKeyDown);
@@ -82,6 +79,7 @@ export function createInputHandler(
     heldKeys.clear();
     stopRepeat();
     dpad.destroy();
+    swipe.destroy();
   };
 }
 
@@ -117,27 +115,20 @@ function createDpad(
 
     btn.addEventListener('pointerdown', (e) => {
       e.preventDefault();
-      if (isGameOver()) {
-        onRestart();
-        return;
-      }
+      if (isGameOver()) { onRestart(); return; }
       onDirection(dir);
-      // Repeat on hold
       repeatTimer = window.setInterval(() => {
         if (!isGameOver()) onDirection(dir);
-      }, 150);
+      }, 120);
     });
 
-    const stopRepeat = () => {
-      if (repeatTimer !== null) {
-        clearInterval(repeatTimer);
-        repeatTimer = null;
-      }
+    const stop = () => {
+      if (repeatTimer !== null) { clearInterval(repeatTimer); repeatTimer = null; }
     };
 
-    btn.addEventListener('pointerup', stopRepeat);
-    btn.addEventListener('pointercancel', stopRepeat);
-    btn.addEventListener('pointerleave', stopRepeat);
+    btn.addEventListener('pointerup', stop);
+    btn.addEventListener('pointercancel', stop);
+    btn.addEventListener('pointerleave', stop);
 
     dpad.appendChild(btn);
   }
@@ -148,6 +139,63 @@ function createDpad(
     destroy() {
       if (repeatTimer !== null) clearInterval(repeatTimer);
       dpad.remove();
+    },
+  };
+}
+
+function createSwipeHandler(
+  container: HTMLElement,
+  onDirection: DirectionCallback,
+  onRestart: RestartCallback,
+  isGameOver: () => boolean,
+) {
+  let startX = 0;
+  let startY = 0;
+  let tracking = false;
+  const THRESHOLD = 20;
+
+  function onTouchStart(e: TouchEvent): void {
+    if (e.touches.length !== 1) return;
+    // Don't capture touches on the d-pad
+    const target = e.target as HTMLElement;
+    if (target.closest('.courier-dpad')) return;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    tracking = true;
+  }
+
+  function onTouchEnd(e: TouchEvent): void {
+    if (!tracking) return;
+    tracking = false;
+    if (e.changedTouches.length === 0) return;
+
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    const absDx = Math.abs(dx);
+    const absDy = Math.abs(dy);
+
+    if (absDx < THRESHOLD && absDy < THRESHOLD) {
+      // Tap — restart if game over
+      if (isGameOver()) onRestart();
+      return;
+    }
+
+    if (isGameOver()) { onRestart(); return; }
+
+    if (absDx > absDy) {
+      onDirection(dx > 0 ? Direction.Right : Direction.Left);
+    } else {
+      onDirection(dy > 0 ? Direction.Down : Direction.Up);
+    }
+  }
+
+  container.addEventListener('touchstart', onTouchStart, { passive: true });
+  container.addEventListener('touchend', onTouchEnd, { passive: true });
+
+  return {
+    destroy() {
+      container.removeEventListener('touchstart', onTouchStart);
+      container.removeEventListener('touchend', onTouchEnd);
     },
   };
 }

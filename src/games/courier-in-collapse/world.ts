@@ -67,8 +67,8 @@ export function generateWorld(seed?: number): {
 
   // Place terminals in spread-out positions
   const terminals: Position[] = [];
-  const terminalTarget = 6;
-  const minDist = 4;
+  const terminalTarget = 5;
+  const minDist = 3;
   let attempts = 0;
 
   while (terminals.length < terminalTarget && attempts < 500) {
