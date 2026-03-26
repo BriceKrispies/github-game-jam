@@ -113,15 +113,35 @@ export function renderPlayView(gameId?: string): HTMLElement {
   backBtn.addEventListener('click', () => navigate('library'));
   toolbar.appendChild(backBtn);
 
+  const entry = gameId ? getRegistry().find(e => e.id === gameId) : undefined;
+  const gameName = entry?.name ?? gameId ?? '';
+
   if (gameId) {
     const title = document.createElement('span');
     title.className = 'play-game-title';
-    const entry = getRegistry().find(e => e.id === gameId);
-    title.textContent = entry?.name ?? gameId;
+    title.textContent = gameName;
     toolbar.appendChild(title);
   }
 
   section.appendChild(toolbar);
+
+  const mobileOverlay = document.createElement('div');
+  mobileOverlay.className = 'play-mobile-overlay';
+  const mobileBack = document.createElement('button');
+  mobileBack.className = 'play-mobile-back';
+  mobileBack.setAttribute('aria-label', 'Back to library');
+  mobileBack.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>`;
+  mobileBack.addEventListener('click', () => navigate('library'));
+  mobileOverlay.appendChild(mobileBack);
+
+  if (gameName) {
+    const mobileTitle = document.createElement('span');
+    mobileTitle.className = 'play-mobile-title';
+    mobileTitle.textContent = gameName;
+    mobileOverlay.appendChild(mobileTitle);
+  }
+
+  section.appendChild(mobileOverlay);
 
   const viewport = document.createElement('div');
   viewport.className = 'game-viewport';

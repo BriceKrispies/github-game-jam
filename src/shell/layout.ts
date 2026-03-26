@@ -10,6 +10,7 @@ const NAV_ITEMS: Array<{ view: ShellView; label: string }> = [
 
 export function createShellLayout(root: HTMLElement): {
   main: HTMLElement;
+  layoutElement: HTMLElement;
   updateActiveNav: (view: ShellView) => void;
 } {
   root.innerHTML = '';
@@ -108,5 +109,5 @@ export function createShellLayout(root: HTMLElement): {
   const initial = getCurrentRoute();
   updateActiveNav(initial.view);
 
-  return { main, updateActiveNav };
+  return { main, layoutElement: layout, updateActiveNav };
 }

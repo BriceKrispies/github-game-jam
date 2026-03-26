@@ -552,6 +552,12 @@ body {
   color: var(--color-text-tertiary);
 }
 
+/* ── Mobile Play Overlay (hidden by default, shown in immersive mode) ── */
+
+.play-mobile-overlay {
+  display: none;
+}
+
 /* ── Responsive ── */
 
 @media (max-width: 767px) {
@@ -573,5 +579,94 @@ body {
 
   .shell-main {
     padding: var(--space-md);
+  }
+
+  /* ── Immersive Play Mode ── */
+
+  .is-immersive-play {
+    position: fixed;
+    inset: 0;
+    min-height: 0;
+    padding: 0;
+  }
+
+  .is-immersive-play .shell-header {
+    display: none;
+  }
+
+  .is-immersive-play .shell-nav-overlay {
+    display: none !important;
+  }
+
+  .is-immersive-play .shell-main {
+    max-width: none;
+    padding: 0;
+    height: 100%;
+  }
+
+  .is-immersive-play .view-play {
+    height: 100%;
+    animation: none;
+  }
+
+  .is-immersive-play .play-toolbar {
+    display: none;
+  }
+
+  .is-immersive-play .play-mobile-overlay {
+    display: flex;
+    position: absolute;
+    top: env(safe-area-inset-top, 0);
+    left: env(safe-area-inset-left, 0);
+    z-index: var(--z-shell);
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs);
+    pointer-events: none;
+  }
+
+  .is-immersive-play .play-mobile-back {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm);
+    background: rgba(0, 0, 0, 0.45);
+    color: #fff;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: background var(--transition-fast);
+  }
+
+  .is-immersive-play .play-mobile-back:hover,
+  .is-immersive-play .play-mobile-back:active {
+    background: rgba(0, 0, 0, 0.65);
+  }
+
+  .is-immersive-play .play-mobile-back svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .is-immersive-play .play-mobile-title {
+    pointer-events: none;
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .is-immersive-play .game-viewport {
+    border: none;
+    border-radius: 0;
+    min-height: 0;
+    height: 100%;
+  }
+
+  .is-immersive-play .game-container {
+    width: 100%;
+    height: 100%;
   }
 }

@@ -16,13 +16,18 @@ import {
 export function createApp(rootElement: HTMLElement): void {
   initRouter();
 
-  const { main, updateActiveNav } = createShellLayout(rootElement);
+  const { main, layoutElement, updateActiveNav } = createShellLayout(rootElement);
 
   let currentGameId: string | null = null;
+
+  function setImmersivePlay(active: boolean): void {
+    layoutElement.classList.toggle('is-immersive-play', active);
+  }
 
   async function handleRoute(route: Route): Promise<void> {
     await unmountCurrentGame();
     currentGameId = null;
+    setImmersivePlay(false);
 
     main.innerHTML = '';
     updateActiveNav(route.view);
@@ -70,6 +75,7 @@ export function createApp(rootElement: HTMLElement): void {
     const success = await mountGame(entry, viewport);
     if (success) {
       currentGameId = gameId;
+      setImmersivePlay(true);
     } else {
       viewport.innerHTML = '';
       viewport.appendChild(renderErrorState(entry.name));
