@@ -20,6 +20,15 @@ const registry: RegistryEntry[] = [
     load: () => import('../games/courier-in-collapse/index'),
   },
   {
+    id: 'risk-tap-miner',
+    name: 'Risk Tap Miner',
+    summary: 'Push your luck. Go deeper. Cash out before it collapses.',
+    tags: ['arcade', 'risk', 'tap', 'high-score'],
+    status: 'playable',
+    version: '1.0.0',
+    load: () => import('../games/risk-tap-miner/index'),
+  },
+  {
     id: 'coming-soon-demo',
     name: 'Untitled Puzzle Game',
     summary: 'A puzzle game concept currently in early design. Not yet playable.',
