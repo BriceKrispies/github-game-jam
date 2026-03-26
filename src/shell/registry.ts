@@ -11,6 +11,15 @@ const registry: RegistryEntry[] = [
     load: () => import('../games/bounce-demo/index'),
   },
   {
+    id: 'courier-in-collapse',
+    name: 'Courier in Collapse',
+    summary: 'Deliver packages across a collapsing grid world. Race against time as the ground crumbles beneath your feet.',
+    tags: ['action', 'puzzle', 'canvas', 'grid'],
+    status: 'playable',
+    version: '1.0.0',
+    load: () => import('../games/courier-in-collapse/index'),
+  },
+  {
     id: 'coming-soon-demo',
     name: 'Untitled Puzzle Game',
     summary: 'A puzzle game concept currently in early design. Not yet playable.',
