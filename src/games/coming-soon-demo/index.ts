@@ -1,20 +1,22 @@
-import type { GameModule } from '../../types/game';
+import type { GameDefinition, Scene, EngineContext, RenderSurface } from '../../engine';
 
-const game: GameModule = {
+const placeholderScene: Scene = {
+  update() {},
+  render(_ctx: EngineContext, surface: RenderSurface) {
+    const { ctx, width, height } = surface;
+    ctx.fillStyle = '#f8f9fb';
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '16px system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Coming soon', width / 2, height / 2);
+  },
+};
+
+const game: GameDefinition = {
   id: 'coming-soon-demo',
-  name: 'Untitled Puzzle Game',
-  description: 'A puzzle game concept currently in early design.',
-
-  mount() {
-    // This game is not playable. The shell should never reach this code
-    // because the registry marks it as coming-soon and the shell checks
-    // status before mounting. If this runs, something is wrong.
-    console.warn('[coming-soon-demo] This game is not playable yet.');
-  },
-
-  unmount() {
-    // Nothing to clean up.
-  },
+  scenes: { main: placeholderScene },
 };
 
 export default game;

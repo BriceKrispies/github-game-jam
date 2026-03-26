@@ -4,21 +4,18 @@ This is the governance documentation for the internal game engine that runs insi
 
 ## What the Engine Is
 
-A strict runtime layer that provides:
+A minimal runtime layer that provides:
 
-- A deterministic game loop with fixed-timestep updates and variable-rate rendering.
-- Scene management with explicit transitions.
-- An entity/world model for organizing game objects.
-- Input abstraction for pointer, keyboard, and touch.
-- A renderer abstraction with Canvas 2D as the baseline backend.
-- Camera/viewport management.
-- Asset loading (images, audio, data).
-- Simple collision detection and lightweight kinematics.
-- Audio playback coordination with the shell's AudioContext.
-- Namespaced state persistence via the shell's storage API.
-- Debug instrumentation for development builds.
+- A game loop using `requestAnimationFrame` with clamped delta time.
+- Scene management with explicit transitions (enter/update/render/exit).
+- Input abstraction for pointer/touch and keyboard with per-frame state tracking.
+- A render surface abstraction with Canvas 2D as the backend.
+- Resize handling via ResizeObserver.
+- Asset loading (images with caching).
+- Simple 2D collision detection helpers (rect, circle, point).
+- Audio playback with Web Audio API.
 
-The engine does not contain game-specific logic. It provides the runtime contract and subsystems that games compose to build their own behavior.
+The engine does not contain game-specific logic. It provides the runtime contract and subsystems that games compose to build their own behavior. See `docs/engine/implementation-overview.md` and `docs/engine/source-map.md` for implementation details.
 
 ## Primary Target: 2D
 

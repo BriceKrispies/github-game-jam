@@ -1,4 +1,4 @@
-import type { GameModule } from './game';
+import type { GameDefinition } from '../engine';
 
 export type GameStatus = 'playable' | 'coming-soon' | 'experimental';
 
@@ -9,5 +9,6 @@ export interface RegistryEntry {
   tags: string[];
   status: GameStatus;
   version: string;
-  load: () => Promise<{ default: GameModule }>;
+  /** Dynamic import returning an engine GameDefinition. */
+  load: () => Promise<{ default: GameDefinition }>;
 }

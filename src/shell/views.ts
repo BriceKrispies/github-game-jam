@@ -212,9 +212,9 @@ export function renderAboutView(): HTMLElement {
         <h2 class="about-section-title">Architecture</h2>
         <ul class="about-list">
           <li>The shell orchestrates &mdash; it never contains game logic</li>
-          <li>Games are fully isolated from each other</li>
+          <li>The engine owns the game loop, canvas, input, and time</li>
+          <li>Games define scenes that plug into the engine runtime</li>
           <li>One game runs at a time with clean mount/unmount lifecycle</li>
-          <li>Shared services (storage, viewport, audio) are injected, never global</li>
           <li>No frameworks &mdash; vanilla TypeScript, semantic HTML, modern CSS</li>
         </ul>
       </div>
@@ -244,7 +244,7 @@ export function renderAboutView(): HTMLElement {
       <div class="about-section">
         <h2 class="about-section-title">Design Goals</h2>
         <ul class="about-list">
-          <li>Strict boundaries between shell, engine, and games</li>
+          <li>Strict boundaries: shell hosts, engine runs, games define gameplay</li>
           <li>AI-agent-friendly structure for future game development</li>
           <li>Desktop and mobile support with responsive layouts</li>
           <li>Minimal dependencies &mdash; keep the platform light</li>

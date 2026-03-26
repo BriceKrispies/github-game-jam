@@ -1,13 +1,9 @@
-import type { GameModule } from '../types/game';
 import type { RegistryEntry } from '../types/registry';
-import { createSharedServices } from './services';
+import { createEngineHost } from '../engine';
+import type { EngineHost } from '../engine';
 
-interface MountedGame {
-  module: GameModule;
-  container: HTMLElement;
-}
-
-let mounted: MountedGame | null = null;
+let engine: EngineHost | null = null;
+let activeContainer: HTMLElement | null = null;
 
 export async function mountGame(
   entry: RegistryEntry,
@@ -23,10 +19,11 @@ export async function mountGame(
   viewport.appendChild(container);
 
   try {
-    const { default: gameModule } = await entry.load();
-    const services = createSharedServices(entry.id, container);
-    await gameModule.mount(container, services);
-    mounted = { module: gameModule, container };
+    const { default: gameDef } = await entry.load();
+
+    engine = createEngineHost();
+    await engine.start(container, gameDef);
+    activeContainer = container;
     return true;
   } catch (err) {
     console.error(`[shell] Failed to mount game "${entry.id}":`, err);
@@ -36,22 +33,23 @@ export async function mountGame(
 }
 
 export async function unmountCurrentGame(): Promise<void> {
-  if (!mounted) return;
+  if (!engine) return;
 
   try {
-    await mounted.module.unmount();
+    await engine.stop();
   } catch (err) {
     console.error('[shell] Error during game unmount:', err);
   }
 
-  mounted.container.remove();
-  mounted = null;
+  activeContainer?.remove();
+  engine = null;
+  activeContainer = null;
 }
 
 export function pauseCurrentGame(): void {
-  if (mounted?.module.pause) {
+  if (engine?.running) {
     try {
-      mounted.module.pause();
+      engine.pause();
     } catch (err) {
       console.error('[shell] Error during game pause:', err);
     }
@@ -59,9 +57,9 @@ export function pauseCurrentGame(): void {
 }
 
 export function resumeCurrentGame(): void {
-  if (mounted?.module.resume) {
+  if (engine) {
     try {
-      mounted.module.resume();
+      engine.resume();
     } catch (err) {
       console.error('[shell] Error during game resume:', err);
     }
@@ -69,5 +67,5 @@ export function resumeCurrentGame(): void {
 }
 
 export function isMounted(): boolean {
-  return mounted !== null;
+  return engine !== null && engine.running;
 }

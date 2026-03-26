@@ -430,6 +430,9 @@ body {
 .game-container {
   flex: 1;
   position: relative;
+  overflow: hidden;
+  width: 100%;
+  min-height: 0;
 }
 
 .game-empty-state,

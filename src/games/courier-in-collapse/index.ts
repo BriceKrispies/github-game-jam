@@ -1,4 +1,4 @@
-import type { GameModule, SharedServices } from '../../types/game';
+import type { GameDefinition, Scene, EngineContext, RenderSurface } from '../../engine';
 import { createRenderer } from './renderer';
 import { createInitialState, tryMove, update } from './state';
 import { createInputHandler } from './input';
@@ -6,105 +6,58 @@ import { createHud } from './hud';
 import type { GameState } from './types';
 import './courier.css';
 
-let cleanup: (() => void) | null = null;
+function createGameScene(): Scene {
+  let state: GameState;
+  let renderer: ReturnType<typeof createRenderer>;
+  let hud: ReturnType<typeof createHud>;
+  let destroyInput: (() => void) | null = null;
 
-const game: GameModule = {
-  id: 'courier-in-collapse',
-  name: 'Courier in Collapse',
-  description: 'Deliver packages across a collapsing grid world. Pick up parcels from terminals and race to deliver them before the ground falls away beneath you.',
+  return {
+    enter(ctx: EngineContext) {
+      const { canvas } = ctx.surface;
+      canvas.setAttribute('aria-label', 'Courier in Collapse — use arrow keys or WASD to move');
 
-  mount(container: HTMLElement, services: SharedServices) {
-    const canvas = document.createElement('canvas');
-    canvas.setAttribute('aria-label', 'Courier in Collapse — use arrow keys or WASD to move');
-    container.appendChild(canvas);
-
-    const renderer = createRenderer(canvas);
-    const hud = createHud(container);
-
-    let state: GameState = createInitialState();
-    let animationId: number | null = null;
-    let running = true;
-    let paused = false;
-
-    function resetGame(): void {
+      renderer = createRenderer(canvas);
+      hud = createHud(ctx.container);
       state = createInitialState();
-    }
 
-    function resize(): void {
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      renderer.resize(w, h);
-    }
-
-    resize();
-    const unsubResize = services.viewport.onResize(() => resize());
-
-    const destroyInput = createInputHandler(
-      container,
-      (dir) => { tryMove(state, dir); },
-      () => { if (state.gameOver) resetGame(); },
-      () => state.gameOver,
-    );
-
-    // Save high score on game over
-    let lastSavedScore = -1;
-
-    function checkHighScore(): void {
-      if (state.gameOver && state.score !== lastSavedScore) {
-        lastSavedScore = state.score;
-        const best = services.storage.get<number>('highScore') ?? 0;
-        if (state.score > best) {
-          services.storage.set('highScore', state.score);
-        }
-      }
-    }
-
-    let lastTime = performance.now();
-
-    function frame(now: number): void {
-      if (!running) return;
-      if (paused) {
-        lastTime = now;
-        animationId = requestAnimationFrame(frame);
-        return;
+      function resetGame(): void {
+        state = createInitialState();
       }
 
-      const dt = Math.min((now - lastTime) / 1000, 0.05);
-      lastTime = now;
+      destroyInput = createInputHandler(
+        ctx.container,
+        (dir) => { tryMove(state, dir); },
+        () => { if (state.gameOver) resetGame(); },
+        () => state.gameOver,
+      );
 
+      renderer.resize(ctx.surface.width, ctx.surface.height);
+    },
+
+    update(_ctx: EngineContext, dt: number) {
       update(state, dt);
-      renderer.draw(state);
       hud.update(state);
-      checkHighScore();
+    },
 
-      animationId = requestAnimationFrame(frame);
-    }
+    render(_ctx: EngineContext, _surface: RenderSurface) {
+      renderer.draw(state);
+    },
 
-    animationId = requestAnimationFrame(frame);
+    resize(_ctx: EngineContext, width: number, height: number) {
+      renderer.resize(width, height);
+    },
 
-    cleanup = () => {
-      running = false;
-      if (animationId !== null) cancelAnimationFrame(animationId);
-      destroyInput();
-      hud.destroy();
-      unsubResize();
-    };
-  },
+    exit() {
+      destroyInput?.();
+      hud?.destroy();
+    },
+  };
+}
 
-  unmount() {
-    if (cleanup) {
-      cleanup();
-      cleanup = null;
-    }
-  },
-
-  pause() {
-    // Handled by paused flag in frame loop
-  },
-
-  resume() {
-    // rAF continues; paused flag cleared
-  },
+const game: GameDefinition = {
+  id: 'courier-in-collapse',
+  scenes: { main: createGameScene() },
 };
 
 export default game;
