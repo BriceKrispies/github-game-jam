@@ -29,6 +29,15 @@ const registry: RegistryEntry[] = [
     load: () => import('../games/risk-tap-miner/index'),
   },
   {
+    id: 'tunnel-pop',
+    name: 'Tunnel Pop',
+    summary: 'Carve tunnels, corner enemies, and survive the underground swarm.',
+    tags: ['arcade', 'digging', 'action', 'retro-inspired'],
+    status: 'playable',
+    version: '0.1.0',
+    load: () => import('../games/tunnel-pop/index'),
+  },
+  {
     id: 'coming-soon-demo',
     name: 'Untitled Puzzle Game',
     summary: 'A puzzle game concept currently in early design. Not yet playable.',
